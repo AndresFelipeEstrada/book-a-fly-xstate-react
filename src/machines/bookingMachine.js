@@ -10,7 +10,9 @@ const fillCountries = {
         src: () => fetchCountries,
         onDone: {
           target: "success",
-          actions: assign({ countries: ({ event }) => event.data }),
+          actions: assign({
+            countries: (context, event) => event.data,
+          }),
         },
         onError: {
           target: "failure",
@@ -19,11 +21,11 @@ const fillCountries = {
           }),
         },
       },
-      success: {},
-      failure: {
-        on: {
-          RETRY: { target: "loading" },
-        },
+    },
+    success: {},
+    failure: {
+      on: {
+        RETRY: { target: "loading" },
       },
     },
   },
@@ -41,27 +43,33 @@ export const bookingMachine = createMachine(
     },
     states: {
       initial: {
-        entry: assign({
-          passengers: ({ context }) => (context.passengers = []),
-          selectedCountry: ({ context }) => (context.selectedCountry = ""),
-        }),
         on: {
           START: {
-            target: "search.loading",
+            target: "search",
           },
         },
       },
       search: {
-        initial:'loading',
-        states: fillCountries,
         on: {
           CONTINUE: {
             target: "passengers",
             actions: assign({
-              selectedCountry: ({ event }) => event.selectedCountry,
+              selectedCountry: (context, event) => event.selectedCountry,
             }),
           },
           CANCEL: "initial",
+        },
+        ...fillCountries,
+      },
+      tickets: {
+        after: {
+          5000: {
+            target: "initial",
+            actions: "cleanContext",
+          },
+        },
+        on: {
+          FINISH: "initial",
         },
       },
       passengers: {
@@ -73,19 +81,10 @@ export const bookingMachine = createMachine(
           },
           ADD: {
             target: "passengers",
-            actions: assign({
-              passengers: ({ event, context }) => [
-                ...context.passengers,
-                event.newPassenger,
-              ],
-            }),
+            actions: assign((context, event) =>
+              context.passengers.push(event.newPassenger),
+            ),
           },
-        },
-      },
-      tickets: {
-        on: {
-          FINISH: "initial",
-          CANCEL: "initial",
         },
       },
     },

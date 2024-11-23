@@ -10,7 +10,8 @@ import { Tickets } from "../componets/Tickets.jsx";
 export default function BaseLayout() {
   const [state, send] = useMachine(bookingMachine);
 
-  console.log(state.value);
+  // console.log(state.context.selectedCountry);
+  // console.log(state.context.passengers);
   return (
     <section className="BaseLayout">
       <Nav state={state} send={send} />
@@ -19,8 +20,8 @@ export default function BaseLayout() {
         state={state}
         onWelcome={(send) => <Welcome send={send} />}
         onSearch={(send) => <Search send={send} />}
-        onPassengers={(send) => <Passengers send={send} />}
-        onTickets={(send) => <Tickets send={send} />}
+        onPassengers={(send) => <Passengers state={state} send={send} />}
+        onTickets={(send) => <Tickets state={state} send={send} />}
       />
     </section>
   );

@@ -1,9 +1,3 @@
-.Tickets {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  flex-direction: column;
-}
 
 .Tickets-finalizar {
   margin-left: auto;

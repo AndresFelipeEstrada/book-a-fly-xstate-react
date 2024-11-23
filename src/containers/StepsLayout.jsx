@@ -13,7 +13,7 @@ export function StepsLayout({
     <>
       {state.matches("initial") && onWelcome(send)}
       {state.matches("search") && onSearch(send)}
-      {state.matches("passenger") && onPassengers(send)}
+      {state.matches("passengers") && onPassengers(send)}
       {state.matches("tickets") && onTickets(send)}
     </>
   );
@@ -28,4 +28,3 @@ StepsLayout.propTypes = {
   state: PropTypes.object.isRequired,
   send: PropTypes.func.isRequired,
 };
-

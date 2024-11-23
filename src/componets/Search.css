@@ -1,8 +1,3 @@
-.Search {
-  display: flex;
-  flex-direction: column;
-}
-
 .Search-select {
   font-size: 1rem;
   margin: 16px 0;
