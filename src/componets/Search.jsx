@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { useState } from "react";
 import "./Search.css";
 
-export const Search = ({ send }) => {
+export const Search = ({ state, send }) => {
   const [flight, setFlight] = useState("");
 
   const goToPassengers = () => {
@@ -13,7 +13,7 @@ export const Search = ({ send }) => {
     setFlight(event.target.value);
   };
 
-  const options = ["Mexico", "Venezuela", "Colombia"];
+  const { countries } = state.context;
 
   return (
     <div className="container Search">
@@ -27,9 +27,9 @@ export const Search = ({ send }) => {
         <option value="" disabled defaultValue>
           Escoge un país
         </option>
-        {options.map((option) => (
-          <option value={option} key={option}>
-            {option}
+        {countries.map((country) => (
+          <option value={country.name.common} key={country.name.common}>
+            {country.name.common}
           </option>
         ))}
       </select>
@@ -46,4 +46,5 @@ export const Search = ({ send }) => {
 
 Search.propTypes = {
   send: PropTypes.func.isRequired,
+  state: PropTypes.object.isRequired,
 };

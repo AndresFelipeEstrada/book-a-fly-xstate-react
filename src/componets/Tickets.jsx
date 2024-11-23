@@ -1,27 +1,27 @@
 import PropTypes from "prop-types";
 import "./Tickets.css";
 
-export const Tickets = ({ send, state }) => {
+export const Tickets = ({ send, context }) => {
   const finish = () => {
     send({ type: "FINISH" });
   };
 
-  const { passengers, selectedCountry } = state.context;
+  const { passengers, selectedCountry } = context;
 
   return (
     <div className="container">
       <p className="container-title title">
         Gracias por volar con book a fly 💚
       </p>
-      {passengers.map((user) => (
-        <div key={user.id} className="Tickets-ticket">
-          <div className="Tickets-country">{selectedCountry}</div>
-          <div className="Tickets-passengers">
-            <p>{user.name}</p>
-            <span>✈</span>
-          </div>
+      <div className="Tickets-ticket">
+        <div className="Tickets-country">{selectedCountry}</div>
+        <div className="Tickets-passengers">
+          <span>✈</span>
+          {passengers.map((passenger) => {
+            return <p className="user-name" key={passenger.id}>{passenger.name}</p>;
+          })}
         </div>
-      ))}
+      </div>
       <button onClick={finish} className="Tickets-finalizar button">
         Finalizar
       </button>
@@ -30,6 +30,6 @@ export const Tickets = ({ send, state }) => {
 };
 
 Tickets.propTypes = {
-  state: PropTypes.object.isRequired,
+  context: PropTypes.object.isRequired,
   send: PropTypes.func.isRequired,
 };

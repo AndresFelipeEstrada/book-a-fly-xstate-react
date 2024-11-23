@@ -1,4 +1,4 @@
-import { assign, createMachine } from "xstate";
+import { assign, createMachine, fromPromise } from "xstate";
 import { fetchCountries } from "../utils/api";
 
 const fillCountries = {
@@ -7,12 +7,10 @@ const fillCountries = {
     loading: {
       invoke: {
         id: "getCountries",
-        src: () => fetchCountries,
+        src: fromPromise(() => fetchCountries()),
         onDone: {
           target: "success",
-          actions: assign({
-            countries: (context, event) => event.data,
-          }),
+          actions: assign({ countries: ({ event }) => event.output }),
         },
         onError: {
           target: "failure",
@@ -48,43 +46,53 @@ export const bookingMachine = createMachine(
             target: "search",
           },
         },
+        entry: assign({
+          passengers: ({ context }) => (context.passengers = []),
+          selectedCountry: ({ context }) => (context.selectedCountry = ""),
+        }),
       },
       search: {
         on: {
           CONTINUE: {
             target: "passengers",
             actions: assign({
-              selectedCountry: (context, event) => event.selectedCountry,
+              selectedCountry: ({ event }) => event.selectedCountry,
             }),
           },
           CANCEL: "initial",
         },
         ...fillCountries,
       },
-      tickets: {
-        after: {
-          5000: {
-            target: "initial",
-            actions: "cleanContext",
-          },
-        },
-        on: {
-          FINISH: "initial",
-        },
-      },
       passengers: {
         on: {
-          DONE: "tickets",
+          DONE: {
+            target: "tickets",
+            guard: "moreThanOnePassenger",
+          },
           CANCEL: {
             target: "initial",
             actions: "cleanContext",
           },
           ADD: {
             target: "passengers",
-            actions: assign((context, event) =>
-              context.passengers.push(event.newPassenger),
-            ),
+            actions: assign({
+              passengers: ({ event, context }) => [
+                ...context.passengers,
+                event.newPassenger,
+              ],
+            }),
           },
+        },
+      },
+      tickets: {
+        // after: {
+        //   5000: {
+        //     target: "initial",
+        //     actions: "cleanContext",
+        //   },
+        // },
+        on: {
+          FINISH: "initial",
         },
       },
     },
@@ -95,6 +103,11 @@ export const bookingMachine = createMachine(
         selectedCountry: "",
         passengers: [],
       }),
+    },
+    guards: {
+      moreThanOnePassenger: ({ context }) => {
+        return context.passengers.length > 0;
+      },
     },
   },
 );

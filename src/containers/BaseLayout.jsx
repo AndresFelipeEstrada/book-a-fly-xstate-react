@@ -11,7 +11,7 @@ export default function BaseLayout() {
   const [state, send] = useMachine(bookingMachine);
 
   // console.log(state.context.selectedCountry);
-  // console.log(state.context.passengers);
+  // console.log(state);
   return (
     <section className="BaseLayout">
       <Nav state={state} send={send} />
@@ -19,9 +19,9 @@ export default function BaseLayout() {
         send={send}
         state={state}
         onWelcome={(send) => <Welcome send={send} />}
-        onSearch={(send) => <Search send={send} />}
+        onSearch={(send) => <Search state={state} send={send} />}
         onPassengers={(send) => <Passengers state={state} send={send} />}
-        onTickets={(send) => <Tickets state={state} send={send} />}
+        onTickets={(send) => <Tickets context={state.context} send={send} />}
       />
     </section>
   );
